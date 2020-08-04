@@ -15,4 +15,25 @@ router.get("/", (req, res) => {
     });
 });
 
+router.post("/", (req, res) => {
+  if (!req.body.title || !req.body.contents) {
+    return res.status(400).send({
+      errorMessage: "Please provide title and contents for the post.",
+    });
+  } else {
+    Posts.insert(req.body)
+      .then((postID) => {
+        Posts.findById(postID.id).then((postBody) => {
+          res.status(201).json({ data: postBody });
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: "There was an error while saving the post to the database",
+        });
+      });
+  }
+});
+
 module.exports = router;
