@@ -77,16 +77,15 @@ router.post("/:id/comments", (req, res) => {
           .catch((error) => {
             console.log(error);
 
-            return res.status(500).send({
-              error:
-                "There was an error while saving the comment to the database",
+            return res.status(404).send({
+              error: "The post with the specified ID does not exist.",
             });
           });
       })
       .catch((error) => {
         console.log(error);
 
-        res
+        return res
           .status(404)
           .send({ message: "The post with the specified ID does not exist." });
       });
