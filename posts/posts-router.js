@@ -58,6 +58,51 @@ router.get("/:id", (req, res) => {
     });
 });
 
+router.put("/:id", (req, res) => {
+  let postID = req.params.id;
+
+  const updatedPost = {
+    title: req.body.title,
+    contents: req.body.contents,
+  };
+
+  if (!updatedPost.title || !updatedPost.contents) {
+    return res.status(400).json({
+      errorMessage: "Please provide title and contents for the post.",
+    });
+  } else {
+    Posts.findById(postID).then((response) => {
+      if (response.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist." });
+      } else {
+        Posts.update(postID, updatedPost)
+          .then((response) => {
+            if (response === 0) {
+              return res
+                .status(500)
+                .json({ error: "The post information could not be modified." });
+            } else {
+              Posts.findById(postID)
+                .then((response) => {
+                  return res.status(200).json({ response });
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          })
+          .catch((error) => {
+            return res
+              .status(500)
+              .json({ error: "The post information could not be modified." });
+          });
+      }
+    });
+  }
+});
+
 router.delete("/:id", (req, res) => {
   let deletePost = req.params.id;
 
