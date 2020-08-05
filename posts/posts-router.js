@@ -58,6 +58,50 @@ router.get("/:id", (req, res) => {
     });
 });
 
+router.delete("/:id", (req, res) => {
+  let deletePost = req.params.id;
+
+  Posts.remove(deletePost)
+    .then((response) => {
+      console.log(response);
+
+      if (response === 0) {
+        return res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist." });
+      } else {
+        return res.status(202).json({
+          message: `Records of post with ID ${deletePost} have successfully been deleted`,
+        });
+      }
+    })
+    .catch((response) => {
+      return res.status(500).json({ error: "The post could not be removed" });
+    });
+});
+
+router.get("/:id/comments", (req, res) => {
+  requestedPost = req.params.id;
+
+  Posts.findPostComments(requestedPost)
+    .then((response) => {
+      console.log(response);
+
+      if (response.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "The post with the specified ID does not exist." });
+      }
+
+      return res.status(200).json(response);
+    })
+    .catch((error) => {
+      return res
+        .status(500)
+        .json({ error: "The comments information could not be retrieved." });
+    });
+});
+
 router.post("/:id/comments", (req, res) => {
   let postID = req.params.id;
   let newComment = {
